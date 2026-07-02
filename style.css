@@ -6,69 +6,156 @@
 }
 
 body {
-    background: #f4f7f6;
+    /* Matches the purple-pink gradient in your image */
+    background: linear-gradient(135deg, #b091f0 0%, #f5bcf5 100%);
     min-height: 100vh;
     padding: 2rem;
     color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-wrapper {
+    width: 100%;
+    max-width: 900px;
 }
 
 .container {
-    max-width: 1000px;
-    margin: 0 auto;
+    background: white;
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 header h1 {
-    color: #2c3e50;
-    font-size: 2.8rem;
+    color: #4a3f75;
+    font-size: 2.2rem;
     margin-bottom: 0.5rem;
 }
 
 header p {
-    color: #7f8c8d;
-    font-size: 1.2rem;
+    color: #6c757d;
+    font-size: 1rem;
 }
 
-.tool-grid {
+/* Upload Area Styling */
+.upload-area {
+    background: #fdfcff;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 2px dashed #b091f0;
+    margin-bottom: 2rem;
+}
+
+.upload-area:hover, .upload-area.dragover {
+    background-color: #f3ebff;
+    border-color: #7b58c9;
+}
+
+.upload-btn {
+    background-color: #6366f1; /* Purple button */
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: background 0.2s;
+}
+
+.upload-btn:hover {
+    background-color: #4f46e5;
+}
+
+.upload-area p {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Actions */
+#actions-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.merge-btn {
+    background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    background: #ffb86c; /* Orange button from reference */
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(255, 184, 108, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.merge-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 184, 108, 0.5);
+}
+
+/* Output Grid (The PDF Cards) */
+.output-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
 }
 
-.tool-card {
+.pdf-card {
     background: white;
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 12px;
     text-align: center;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    transition: all 0.2s ease-in-out;
-    border: 2px solid transparent;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.tool-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    border-color: #3498db;
-}
-
-.icon {
-    font-size: 3rem;
+.pdf-icon {
+    font-size: 4rem;
     margin-bottom: 1rem;
+    color: #e74c3c;
 }
 
-.tool-card h3 {
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-.tool-card p {
-    color: #7f8c8d;
+.pdf-name {
     font-size: 0.9rem;
+    color: #333;
+    word-break: break-all;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.remove-btn {
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.remove-btn:hover {
+    background-color: #ff6b81;
 }
 
 /* Modal Styling */
@@ -94,4 +181,19 @@ header p {
 .modal-content h2 {
     color: #2c3e50;
     margin-bottom: 10px;
+}
+
+.loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #b091f0;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
