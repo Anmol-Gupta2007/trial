@@ -1,4 +1,4 @@
-// Store the selected files globally so we can add/remove them
+// Store the selected files globally
 let selectedFiles = [];
 
 // --- UI Elements ---
@@ -23,16 +23,26 @@ function download(data, filename, type) {
     URL.revokeObjectURL(url);
 }
 
-// --- Event Listeners for Uploading ---
+// --- Fix: Event Listeners for Uploading ---
+
+// 1. If clicking the button, stop the event from bubbling to the uploadArea and trigger the input
 chooseBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevents double clicking if nested
+    e.stopPropagation(); 
     fileInput.click();
 });
-uploadArea.addEventListener('click', () => fileInput.click());
 
+// 2. If clicking anywhere else in the dotted box, trigger the input
+uploadArea.addEventListener('click', () => {
+    fileInput.click();
+});
+
+// 3. Detect when files are selected
 fileInput.addEventListener('change', (e) => {
-    handleFiles(e.target.files);
-    fileInput.value = ''; // Reset input so the same files can be re-selected if removed
+    if (e.target.files.length > 0) {
+        handleFiles(e.target.files);
+    }
+    // Reset the input value so selecting the exact same file twice in a row still works
+    fileInput.value = ''; 
 });
 
 // --- Drag and Drop Logic ---
@@ -63,7 +73,7 @@ function handleFiles(files) {
         return;
     }
 
-    // Add to our global list
+    // Add new files to our global list
     selectedFiles = selectedFiles.concat(newFiles);
     
     // Update the UI
@@ -71,7 +81,7 @@ function handleFiles(files) {
 }
 
 // --- Handle Removing Files ---
-function removeFile(index) {
+window.removeFile = function(index) {
     selectedFiles.splice(index, 1);
     renderUI();
 }
@@ -93,7 +103,6 @@ function renderUI() {
         const card = document.createElement('div');
         card.className = 'pdf-card';
 
-        // Using a generic styled document emoji/icon to represent the PDF thumbnail
         card.innerHTML = `
             <div class="pdf-icon">📄</div>
             <div class="pdf-name">${file.name}</div>
