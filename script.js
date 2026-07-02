@@ -1,3 +1,15 @@
+// Store the selected files globally so we can add/remove them
+let selectedFiles = [];
+
+// --- UI Elements ---
+const uploadArea = document.getElementById('upload-area');
+const fileInput = document.getElementById('file-input');
+const chooseBtn = document.getElementById('choose-btn');
+const outputContainer = document.getElementById('output-container');
+const actionsContainer = document.getElementById('actions-container');
+const mergeBtn = document.getElementById('merge-btn');
+const modal = document.getElementById('processing-modal');
+
 // --- Helper: Download Function ---
 function download(data, filename, type) {
     const blob = new Blob([data], { type: type });
@@ -11,202 +23,120 @@ function download(data, filename, type) {
     URL.revokeObjectURL(url);
 }
 
-// --- Modal UI functions ---
-const modal = document.getElementById('processing-modal');
-const showModal = () => modal.style.display = 'flex';
-const hideModal = () => modal.style.display = 'none';
+// --- Event Listeners for Uploading ---
+chooseBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevents double clicking if nested
+    fileInput.click();
+});
+uploadArea.addEventListener('click', () => fileInput.click());
 
-// --- 1. MERGE PDF LOGIC ---
-const cardMerge = document.getElementById('card-merge');
-const inputMerge = document.getElementById('input-merge');
+fileInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+    fileInput.value = ''; // Reset input so the same files can be re-selected if removed
+});
 
-cardMerge.addEventListener('click', () => inputMerge.click());
+// --- Drag and Drop Logic ---
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
 
-inputMerge.addEventListener('change', async (e) => {
-    if (e.target.files.length < 2) {
-        alert("Please select at least 2 PDFs to merge.");
-        inputMerge.value = ''; // reset
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+        handleFiles(e.dataTransfer.files);
+    }
+});
+
+// --- Handle Adding Files ---
+function handleFiles(files) {
+    // Convert FileList to Array and filter only PDFs
+    const newFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+    
+    if (newFiles.length === 0) {
+        alert("Please select valid PDF files.");
         return;
     }
 
-    showModal();
+    // Add to our global list
+    selectedFiles = selectedFiles.concat(newFiles);
+    
+    // Update the UI
+    renderUI();
+}
+
+// --- Handle Removing Files ---
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderUI();
+}
+
+// --- Render the UI ---
+function renderUI() {
+    // Clear current output
+    outputContainer.innerHTML = '';
+
+    // If we have files, show the merge button
+    if (selectedFiles.length > 1) {
+        actionsContainer.style.display = 'block';
+    } else {
+        actionsContainer.style.display = 'none';
+    }
+
+    // Generate cards for each selected file
+    selectedFiles.forEach((file, index) => {
+        const card = document.createElement('div');
+        card.className = 'pdf-card';
+
+        // Using a generic styled document emoji/icon to represent the PDF thumbnail
+        card.innerHTML = `
+            <div class="pdf-icon">📄</div>
+            <div class="pdf-name">${file.name}</div>
+            <button class="remove-btn" onclick="removeFile(${index})">Remove</button>
+        `;
+        
+        outputContainer.appendChild(card);
+    });
+}
+
+// --- Merge PDF Logic ---
+mergeBtn.addEventListener('click', async () => {
+    if (selectedFiles.length < 2) {
+        alert("You need at least 2 PDFs to merge.");
+        return;
+    }
+
+    modal.style.display = 'flex'; // Show loading screen
+
     try {
         const { PDFDocument } = PDFLib;
         const mergedPdf = await PDFDocument.create();
 
-        // Loop through uploaded files
-        for (const file of e.target.files) {
+        // Loop through all files in the array
+        for (const file of selectedFiles) {
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await PDFDocument.load(arrayBuffer);
+            
+            // Copy all pages
             const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
             
+            // Add pages to new document
             copiedPages.forEach((page) => mergedPdf.addPage(page));
         }
 
-        // Save and trigger download
+        // Save and download
         const mergedPdfBytes = await mergedPdf.save();
         download(mergedPdfBytes, "Merged_Document.pdf", "application/pdf");
         
     } catch (error) {
         console.error("Error merging PDFs:", error);
-        alert("An error occurred during merging. Make sure they are valid PDF files.");
+        alert("An error occurred during merging. Make sure they are valid, unencrypted PDF files.");
     }
     
-    hideModal();
-    inputMerge.value = ''; // Reset input
-});
-
-// --- 2. ROTATE PDF LOGIC ---
-const cardRotate = document.getElementById('card-rotate');
-const inputRotate = document.getElementById('input-rotate');
-
-cardRotate.addEventListener('click', () => inputRotate.click());
-
-inputRotate.addEventListener('change', async (e) => {
-    if (e.target.files.length === 0) return;
-
-    showModal();
-    try {
-        const { PDFDocument, degrees } = PDFLib;
-        const file = e.target.files[0];
-        
-        const arrayBuffer = await file.arrayBuffer();
-        const pdfDoc = await PDFDocument.load(arrayBuffer);
-        
-        const pages = pdfDoc.getPages();
-        
-        // Rotate every page by 90 degrees
-        pages.forEach((page) => {
-            const currentRotation = page.getRotation().angle;
-            page.setRotation(degrees(currentRotation + 90));
-        });
-
-        // Save and trigger download
-        const pdfBytes = await pdfDoc.save();
-        download(pdfBytes, "Rotated_" + file.name, "application/pdf");
-
-    } catch (error) {
-        console.error("Error rotating PDF:", error);
-        alert("An error occurred during rotation.");
-    }
-    
-    hideModal();
-    inputRotate.value = ''; 
-});
-
-// --- 3. COMPRESS PDF (Basic Optimization) ---
-const cardCompress = document.getElementById('card-compress');
-const inputCompress = document.getElementById('input-compress');
-
-cardCompress.addEventListener('click', () => inputCompress.click());
-
-inputCompress.addEventListener('change', async (e) => {
-    if (e.target.files.length === 0) return;
-
-    showModal();
-    try {
-        const file = e.target.files[0];
-        const arrayBuffer = await file.arrayBuffer();
-
-        const { PDFDocument } = PDFLib;
-        
-        // Load the PDF
-        const pdfDoc = await PDFDocument.load(arrayBuffer);
-        
-        // Strip out invisible metadata to save space
-        pdfDoc.setTitle('');
-        pdfDoc.setAuthor('');
-        pdfDoc.setSubject('');
-        pdfDoc.setKeywords([]);
-        pdfDoc.setProducer('');
-        pdfDoc.setCreator('');
-
-        // Save using Object Streams to compress the internal PDF code
-        const pdfBytes = await pdfDoc.save({ useObjectStreams: true });
-        
-        download(pdfBytes, "Compressed_" + file.name, "application/pdf");
-
-        const originalSizeKB = (file.size / 1024).toFixed(2);
-        const newSizeKB = (pdfBytes.length / 1024).toFixed(2);
-        
-        setTimeout(() => {
-            alert(`Optimization Complete!\n\nOriginal Size: ${originalSizeKB} KB\nNew Size: ${newSizeKB} KB`);
-        }, 500);
-
-    } catch (error) {
-        console.error("Error compressing PDF:", error);
-        alert("An error occurred during optimization.");
-    }
-    
-    hideModal();
-    inputCompress.value = ''; 
-});
-
-// --- 4. WORD TO PDF (Text Extraction Method) ---
-const cardWordPdf = document.getElementById('card-word-pdf');
-const inputWordPdf = document.getElementById('input-word-pdf');
-
-cardWordPdf.addEventListener('click', () => inputWordPdf.click());
-
-inputWordPdf.addEventListener('change', async (e) => {
-    if (e.target.files.length === 0) return;
-
-    showModal();
-    try {
-        const file = e.target.files[0];
-        const arrayBuffer = await file.arrayBuffer();
-
-        // Step 1: Use Mammoth to extract raw text
-        const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-        const extractedText = result.value;
-
-        if (!extractedText) throw new Error("Could not extract text.");
-
-        // Step 2: Create a new PDF using pdf-lib
-        const { PDFDocument, StandardFonts, rgb } = PDFLib;
-        const pdfDoc = await PDFDocument.create();
-        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-        
-        let page = pdfDoc.addPage();
-        const { width, height } = page.getSize();
-        const fontSize = 12;
-        const margin = 50;
-        let currentY = height - margin;
-
-        const words = extractedText.split(' ');
-        let currentLine = '';
-
-        for (let i = 0; i < words.length; i++) {
-            const word = words[i];
-            const testLine = currentLine + word + ' ';
-            const textWidth = font.widthOfTextAtSize(testLine, fontSize);
-
-            if (textWidth > width - (margin * 2)) {
-                page.drawText(currentLine, { x: margin, y: currentY, size: fontSize, font: font, color: rgb(0, 0, 0) });
-                currentLine = word + ' ';
-                currentY -= (fontSize + 5);
-
-                if (currentY < margin) {
-                    page = pdfDoc.addPage();
-                    currentY = height - margin;
-                }
-            } else {
-                currentLine = testLine;
-            }
-        }
-        
-        if (currentLine.trim()) {
-            page.drawText(currentLine, { x: margin, y: currentY, size: fontSize, font: font, color: rgb(0, 0, 0) });
-        }
-
-        const pdfBytes = await pdfDoc.save();
-        download(pdfBytes, "Converted_" + file.name.replace('.docx', '.pdf'), "application/pdf");
-
-    } catch (error) {
-        console.error("Error converting Word to PDF:", error);
-        alert("An error occurred. Make sure the file is a valid .docx.");
-    }
-    
-    hideModal();
-    inputWordPdf.value = ''; 
+    modal.style.display = 'none'; // Hide loading screen
 });
