@@ -6,8 +6,7 @@
 }
 
 body {
-    /* Matches the purple-pink gradient in your image */
-    background: linear-gradient(135deg, #b091f0 0%, #f5bcf5 100%);
+    background: #f4eaff; /* Soft purple background mimicking the reference edges */
     min-height: 100vh;
     padding: 2rem;
     color: #333;
@@ -25,7 +24,7 @@ body {
     background: white;
     padding: 3rem;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 header {
@@ -34,25 +33,26 @@ header {
 }
 
 header h1 {
-    color: #4a3f75;
+    color: #554488; /* Dark purple from the reference image */
     font-size: 2.2rem;
     margin-bottom: 0.5rem;
+    font-weight: 700;
 }
 
 header p {
-    color: #6c757d;
-    font-size: 1rem;
+    color: #7b7b7b; /* Gray subtitle text */
+    font-size: 1.05rem;
 }
 
-/* Upload Area Styling */
+/* Upload Area Styling - Matched to image_60e6fa.png */
 .upload-area {
-    background: #fdfcff;
-    padding: 3rem 2rem;
+    background: #faf8ff;
+    padding: 3.5rem 2rem;
     border-radius: 12px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    border: 2px dashed #b091f0;
+    border: 2px dashed #9e84d4; /* Purple dashed border */
     margin-bottom: 2rem;
 }
 
@@ -61,26 +61,29 @@ header p {
     border-color: #7b58c9;
 }
 
+/* Gradient Button - Matched to image_60e6fa.png */
 .upload-btn {
-    background-color: #6366f1; /* Purple button */
+    background: linear-gradient(90deg, #6b84ea 0%, #8755c9 100%);
     color: white;
     border: none;
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
+    padding: 0.9rem 2.2rem;
+    font-size: 1.05rem;
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
-    margin-bottom: 1rem;
-    transition: background 0.2s;
+    margin-bottom: 1.2rem;
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 4px 10px rgba(107, 132, 234, 0.3);
 }
 
 .upload-btn:hover {
-    background-color: #4f46e5;
+    opacity: 0.9;
+    transform: translateY(-1px);
 }
 
 .upload-area p {
-    color: #888;
-    font-size: 0.9rem;
+    color: #5c6270;
+    font-size: 1rem;
 }
 
 /* Actions */
@@ -90,8 +93,7 @@ header p {
 }
 
 .merge-btn {
-    background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-    background: #ffb86c; /* Orange button from reference */
+    background: linear-gradient(90deg, #ffb86c 0%, #ff9a9e 100%);
     color: white;
     border: none;
     padding: 1rem 2.5rem;
@@ -129,9 +131,8 @@ header p {
 }
 
 .pdf-icon {
-    font-size: 4rem;
+    font-size: 3.5rem;
     margin-bottom: 1rem;
-    color: #e74c3c;
 }
 
 .pdf-name {
@@ -185,7 +186,7 @@ header p {
 
 .loader {
     border: 6px solid #f3f3f3;
-    border-top: 6px solid #b091f0;
+    border-top: 6px solid #8755c9;
     border-radius: 50%;
     width: 50px;
     height: 50px;
