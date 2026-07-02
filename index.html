@@ -3,53 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Toolkit - Merge, Rotate & Compress</title>
+    <title>PDF Merger</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- Load pdf-lib for Merging, Rotating, and Compressing PDFs -->
+    <!-- Load pdf-lib for Merging PDFs -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <!-- Load Mammoth for Word to PDF extraction (if you use it later) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>✨ Ultimate PDF Toolkit</h1>
-            <p>Merge, rotate, compress, and convert your PDFs easily in the browser.</p>
-        </header>
-        
-        <div class="tool-grid">
-            <!-- 1. MERGE PDF -->
-            <div class="tool-card" id="card-merge">
-                <div class="icon">🔗</div>
-                <h3>Merge PDFs</h3>
-                <p>Combine multiple PDF files into one single document.</p>
-                <!-- Hidden input allowing multiple files -->
-                <input type="file" id="input-merge" accept="application/pdf" multiple hidden>
+    <div class="app-wrapper">
+        <div class="container">
+            <header>
+                <h1>✨ PDF Merger</h1>
+                <p>Upload multiple PDFs, manage your list, and merge them into one.</p>
+            </header>
+            
+            <div class="upload-area" id="upload-area">
+                <input type="file" id="file-input" accept="application/pdf" multiple hidden>
+                <button class="upload-btn" id="choose-btn">Choose PDFs</button>
+                <p>or drag and drop your files here</p>
             </div>
 
-            <!-- 2. ROTATE PDF -->
-            <div class="tool-card" id="card-rotate">
-                <div class="icon">🔄</div>
-                <h3>Rotate PDF</h3>
-                <p>Rotate all pages in a PDF by 90 degrees.</p>
-                <input type="file" id="input-rotate" accept="application/pdf" hidden>
+            <div id="actions-container" style="display: none;">
+                <button id="merge-btn" class="merge-btn">⬇️ Merge Selected PDFs</button>
             </div>
 
-            <!-- 3. COMPRESS PDF -->
-            <div class="tool-card" id="card-compress">
-                <div class="icon">🗜️</div>
-                <h3>Compress PDF</h3>
-                <p>Optimize and reduce the file size of your PDF.</p>
-                <input type="file" id="input-compress" accept="application/pdf" hidden>
-            </div>
-
-            <!-- 4. WORD TO PDF -->
-            <div class="tool-card" id="card-word-pdf">
-                <div class="icon">📝</div>
-                <h3>Word to PDF</h3>
-                <p>Extract text from a .docx file and save as PDF.</p>
-                <input type="file" id="input-word-pdf" accept=".docx" hidden>
+            <div id="output-container" class="output-grid">
+                <!-- Selected PDF cards will appear here -->
             </div>
         </div>
     </div>
@@ -57,8 +36,9 @@
     <!-- Processing Modal -->
     <div class="modal" id="processing-modal">
         <div class="modal-content">
-            <h2>⏳ Processing...</h2>
-            <p>Please wait while we work on your files.</p>
+            <div class="loader"></div>
+            <h2>Merging...</h2>
+            <p>Please wait while we combine your files.</p>
         </div>
     </div>
 
