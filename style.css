@@ -6,18 +6,21 @@
 }
 
 body {
-    background: #f4eaff; /* Soft purple background mimicking the reference edges */
+    /* Updated gradient background to match the image */
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
     min-height: 100vh;
-    padding: 2rem;
+    /* Pushes the container to the top area instead of perfectly centered */
+    padding: 4rem 2rem 2rem 2rem; 
     color: #333;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Aligns items to the top rather than center */
 }
 
 .app-wrapper {
     width: 100%;
-    max-width: 900px;
+    /* Increased the width of the white box */
+    max-width: 1100px; 
 }
 
 .container {
@@ -33,26 +36,26 @@ header {
 }
 
 header h1 {
-    color: #554488; /* Dark purple from the reference image */
+    color: #554488;
     font-size: 2.2rem;
     margin-bottom: 0.5rem;
     font-weight: 700;
 }
 
 header p {
-    color: #7b7b7b; /* Gray subtitle text */
+    color: #7b7b7b;
     font-size: 1.05rem;
 }
 
-/* Upload Area Styling - Matched to image_60e6fa.png */
+/* Upload Area Styling */
 .upload-area {
     background: #faf8ff;
-    padding: 3.5rem 2rem;
+    padding: 4rem 2rem;
     border-radius: 12px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    border: 2px dashed #9e84d4; /* Purple dashed border */
+    border: 2px dashed #9e84d4; 
     margin-bottom: 2rem;
 }
 
@@ -61,7 +64,7 @@ header p {
     border-color: #7b58c9;
 }
 
-/* Gradient Button - Matched to image_60e6fa.png */
+/* Gradient Button */
 .upload-btn {
     background: linear-gradient(90deg, #6b84ea 0%, #8755c9 100%);
     color: white;
